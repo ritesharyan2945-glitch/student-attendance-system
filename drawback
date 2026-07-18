@@ -1,0 +1,15 @@
+⚡ Technical Vulnerabilities
+1. Single Point of Failure: Connectivity Dependencies
+Online attendance systems require a continuous connection to a central server.
+
+Network Blackouts: If the facility's internet drops, or if a field employee enters a cellular dead zone, users cannot clock in or out.
+
+Server Downtime: If the cloud provider experiences a routing failure or database lock, the entire organization's check-in portal crashes simultaneously.
+
+
+  2. Device Compatibility & Fragmented Client Environments
+When rolling out "Bring Your Own Device" (BYOD) systems for remote work tracking:
+
+Older operating systems or specific browser engines may fail to parse newer frontend code or handle JavaScript security protocols correctly.
+
+Background battery-saver optimizations on certain smartphones frequently kill geolocation features, leading to failed logs or inaccurate tracking.
