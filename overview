@@ -1,0 +1,33 @@
+
+An Attendance Management System is an operational framework used by organizations (businesses, universities, schools) to track the time students or employees enter, work, and leave their designated premises.
+
+It forms the bridge between HR operations, payroll calculation, security, and productivity tracking.
+
+
+
+
+
+
+
+The Collection Layer (Frontend / Hardware): Captures user check-ins via web interfaces, mobile applications with geolocation, or physical hardware.
+The Processing Engine (Backend): Checks identity tokens, calculates total hours worked, handles exceptions (like half-days or shifts crossing midnight),
+and processes leave metrics.The Data Core (Database): Holds immutable logs of historical check-ins, user hierarchies, department configurations,
+and calendar structures.🛠️ Common Data Collection MethodsDepending on an organization's budget, security needs, and workforce structure 
+(remote vs. on-site), they will typically use one or a combination of these capture modes:Biometrics (Fingerprint / Facial Recognition):
+The most secure physical method. Virtually eliminates "buddy punching" (employees checking in for each other).RFID / Proximity Cards:
+Speed-optimized hardware entry tracking. Employees tap physical badges at turnstiles or doors.Geofenced Web/Mobile Portals: 
+Ideal for remote or hybrid workforces. The application captures the user's GPS coordinates upon mobile check-in and ensures they
+are within an allowed boundary (e.g., a 200-meter radius around the job site).Single Sign-On (SSO) Integration: Used heavily in software-first
+corporate environments. Check-in is automatically triggered the moment an employee logs into their operating system, Slack, or company portal.
+🔄 Lifecycle of an Attendance EventAn employee's presence follows a strict programmatic sequence during a single workday:
+1.Punch Validation:
+Identity Verification.The user scans or clicks "Check In". The backend verifies their active identifier and matches it to a system-wide profile
+.2.Threshold Calculation:
+Grace Periods & Status Mapping.The server checks the exact arrival timestamp against the assigned shift schedule (e.g., 9:00 AM).
+If it passes a buffer limit (like a 15-minute grace window), the entry is flagged as "Late Arrival".
+3.Accumulation & Interval Compute:
+Punch-Out Handling.When the user punches out, the system calculates the final delta between timestamps, removes unpaid break durations, and appends 
+total_hours_worked to the database record.
+4.Payroll Reconciliation:
+Export Generation.At the end of the month, the analytics layer aggregates total raw hours, handles overtime rules, discounts 
+approved leaves, and generates data formats easily readable by accounting systems.
