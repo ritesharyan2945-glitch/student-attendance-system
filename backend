@@ -1,0 +1,33 @@
+BACKEND FOR THIS SYSTEM
+
+
+const mongoose = require('mongoose');
+
+const UserSchema = new mongoose.Schema({
+    userId: { type: String, required: true, unique: true }, // e.g., EMP-101
+    name: { type: String, required: true },
+    role: { type: String, required: true }, // e.g., Engineering, Design
+    isActive: { type: Boolean, default: true }
+}, { timestamps: true });
+
+module.exports = mongoose.model('User', UserSchema);
+
+
+                    OR
+
+
+const mongoose = require('mongoose');
+
+const AttendanceSchema = new mongoose.Schema({
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    date: { type: String, required: true }, // Stored as standard "YYYY-MM-DD" for fast date-matching
+    checkIn: { type: Date, required: true },
+    checkOut: { type: Date },
+    status: { type: String, enum: ['Present', 'Absent'], default: 'Present' },
+    durationMinutes: { type: Number, default: 0 } // Computed on checkout
+}, { timestamps: true });
+
+// Prevent checking in multiple times on the exact same date
+AttendanceSchema.index({ user: 1, date: 1 }, { unique: true });
+
+module.exports = mongoose.model('Attendance', AttendanceSchema);
