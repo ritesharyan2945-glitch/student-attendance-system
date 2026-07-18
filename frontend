@@ -1,0 +1,98 @@
+THIS FRONTEND IS WORK IN HTML 
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Management System</title>
+    <!-- Tailwind CSS for sleek styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+
+    <div class="flex h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-indigo-900 text-white p-6 hidden md:block">
+            <h1 class="text-2xl font-bold mb-8 flex items-center gap-2">
+                <span>⏱️</span> ChronoLog
+            </h1>
+            <nav class="space-y-4">
+                <a href="#" class="block py-2.5 px-4 rounded bg-indigo-800 font-semibold transition">Dashboard</a>
+                <a href="#" class="block py-2.5 px-4 rounded hover:bg-indigo-800 transition text-gray-300 hover:text-white">Roster</a>
+                <a href="#" class="block py-2.5 px-4 rounded hover:bg-indigo-800 transition text-gray-300 hover:text-white">Reports</a>
+                <a href="#" class="block py-2.5 px-4 rounded hover:bg-indigo-800 transition text-gray-300 hover:text-white">Settings</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+            <!-- Header -->
+            <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div>
+                    <h2 class="text-3xl font-bold tracking-tight">Attendance Dashboard</h2>
+                    <p class="text-gray-500" id="current-date">Today is...</p>
+                </div>
+                <div class="flex gap-3">
+                    <button id="btn-checkin" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-5 rounded-lg shadow transition flex items-center gap-2">
+                        <span>✓</span> Check In
+                    </button>
+                </div>
+            </header>
+
+            <!-- Metrics Overview Widgets -->
+            <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">Total Members</p>
+                    <h3 class="text-3xl font-bold mt-1 text-gray-900" id="stat-total">0</h3>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">Present Today</p>
+                    <h3 class="text-3xl font-bold mt-1 text-emerald-600" id="stat-present">0</h3>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">Absent Members</p>
+                    <h3 class="text-3xl font-bold mt-1 text-rose-600" id="stat-absent">0</h3>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">Attendance Rate</p>
+                    <h3 class="text-3xl font-bold mt-1 text-indigo-600" id="stat-rate">0%</h3>
+                </div>
+            </section>
+
+            <!-- Roster & Controls Section -->
+            <section class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+                    <h3 class="text-lg font-bold text-gray-900">Today's Roster</h3>
+                    <div class="relative max-w-xs w-full">
+                        <input type="text" id="search-bar" placeholder="Search by name or ID..." class="w-full pl-4 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 border-b border-gray-100 text-xs font-semibold uppercase tracking-wider text-gray-500">
+                                <th class="py-4 px-6">ID</th>
+                                <th class="py-4 px-6">Name</th>
+                                <th class="py-4 px-6">Role / Department</th>
+                                <th class="py-4 px-6">Status</th>
+                                <th class="py-4 px-6">Punch Time</th>
+                                <th class="py-4 px-6 text-right">Quick Toggle</th>
+                            </tr>
+                        </thead>
+                        <tbody id="roster-table-body" class="divide-y divide-gray-100 text-sm text-gray-700">
+                            <!-- Injected dynamically via script.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Injecting Frontend logic -->
+    <script src="script.js"></script>
+</body>
+</html>
