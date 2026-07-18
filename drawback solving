@@ -1,0 +1,114 @@
+BY USING JAVASCRIPT WE CAN SOLVE THIS
+
+
+// Install or import Dexie via CDN for clean, production-grade IndexedDB management
+import Dexie from 'https://unpkg.com/dexie@latest/dist/dexie.mjs';
+
+// 1. Initialize the local Offline Database
+const db = new Dexie('OfflineAttendanceDB');
+db.version(1).stores({
+    punches: '++id, userId, type, timestamp, synced' // Indexed fields
+});
+
+const BACKEND_URL = 'http://localhost:5000/api/attendance';
+
+/**
+ * CORE INTERACTION LAYER: Handles the user punch action
+ * Works identically whether the user has 5G internet or is in an elevator with 0 signal.
+ */
+async function processPunch(userId, type = 'checkin') {
+    const punchPayload = {
+        userId: userId,
+        type: type, // 'checkin' or 'checkout'
+        timestamp: new Date().toISOString(),
+        synced: 0 // 0 = Pending, 1 = Successfully synced to cloud
+    };
+
+    if (navigator.onLine) {
+        // SCENARIO A: Device is online. Try posting directly to the cloud.
+        try {
+            const success = await sendToCloud(punchPayload);
+            if (success) {
+                punchPayload.synced = 1;
+                await db.punches.add(punchPayload);
+                uiNotify("Punch logged and synced to cloud immediately! ✅");
+                return;
+            }
+        } catch (err) {
+            console.warn("Direct online punch failed, falling back to local storage...", err);
+        }
+    }
+
+    // SCENARIO B: Device is offline OR backend server timed out.
+    // Save to local secure storage instead of crashing or showing an error.
+    await db.punches.add(punchPayload);
+    uiNotify("You are offline! Punch saved safely on your device. It will auto-sync when connection returns. 💾");
+    
+    // Register background sync if supported by browser, or trigger custom fallback
+    setupSyncListeners();
+}
+
+/**
+ * API HANDLER: Sends payload to Node.js backend
+ */
+async function sendToCloud(punch) {
+    const endpoint = `${BACKEND_URL}/${punch.type}`;
+    const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            userId: punch.userId,
+            offlineTimestamp: punch.timestamp // Send original time, not sync time!
+        }),
+    });
+    return response.ok;
+}
+
+/**
+ * SYNCHRONIZATION ENGINE: Processes pending local items and flushes them to the cloud
+ */
+async function syncPendingPunches() {
+    // Grab all records where synced == 0
+    const pendingPunches = await db.punches.where('synced').equals(0).toArray();
+    
+    if (pendingPunches.length === 0) return;
+    
+    console.log(`🔄 Found ${pendingPunches.length} unsynced attendance punches. Syncing now...`);
+
+    for (const punch of pendingPunches) {
+        try {
+            const success = await sendToCloud(punch);
+            if (success) {
+                // Update local status so we don't duplicate logs
+                await db.punches.update(punch.id, { synced: 1 });
+                console.log(`🎉 Punch ID ${punch.id} successfully synced.`);
+            }
+        } catch (error) {
+            console.error(`❌ Failed syncing punch ID ${punch.id}:`, error);
+            break; // Stop loop if server goes down mid-sync
+        }
+    }
+}
+
+/**
+ * NETWORK MONITORS: Listens to the browser's hardware state
+ */
+function setupSyncListeners() {
+    // Trigger synchronization immediately when browser reports it's back online
+    window.addEventListener('online', () => {
+        uiNotify("Network restored! Syncing pending logs... 📡");
+        syncPendingPunches();
+    });
+}
+
+// Simple helper to alert user dashboard
+function uiNotify(msg) {
+    console.log(`[Attendance System]: ${msg}`);
+    // If you have an alert banner in HTML, update its text here
+}
+
+// Initialize on boot to catch any entries missed while app was closed
+setupSyncListeners();
+if (navigator.onLine) syncPendingPunches();
+
+export { processPunch, syncPendingPunches };
